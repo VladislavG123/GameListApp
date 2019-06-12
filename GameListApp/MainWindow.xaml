@@ -27,7 +27,7 @@
         <Canvas Grid.ColumnSpan="2" Background="#FF1F1F1F">
         </Canvas>
         <Label HorizontalContentAlignment="Center" BorderThickness="0 0 2 0" BorderBrush="White" VerticalContentAlignment="Center" Height="auto" Foreground="White">Games</Label>
-        <ListBox Foreground="White" BorderThickness="0 0 2 0" BorderBrush="White" x:Name="gamesListBox" Grid.Row="1"></ListBox>
+        <ListBox Foreground="White" BorderThickness="0 0 2 0" BorderBrush="White" x:Name="gamesListBox" Grid.Row="1" PreviewMouseDown="gamesListBox_PreviewMouseDown"></ListBox>
 
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.RowDefinitions>
@@ -41,9 +41,9 @@
                 <ColumnDefinition Width="247*"/>
             </Grid.ColumnDefinitions>
 
-            <Label x:Name="gameNameTextBox" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" Foreground="White"></Label>
+            <Label Padding="0" x:Name="gameNameTextBox" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" Foreground="White"></Label>
             <RichTextBox x:Name="gameInformation" Grid.Row="2" BorderThickness="0" Background="#FF2B2B2B" Foreground="White"></RichTextBox>
-            <WebBrowser x:Name="gameVideo" Grid.Column="1" Grid.Row="2"></WebBrowser>
+            <MediaElement x:Name="video" Grid.Column="1" Grid.Row="2"></MediaElement>
 
         </Grid>
 

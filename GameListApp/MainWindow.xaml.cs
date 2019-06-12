@@ -36,14 +36,6 @@ namespace GameListApp
             var games = await GetGames();
 
             gamesListBox.ItemsSource = games;
-
-            foreach (var game in games)
-            {
-                if (game.Videos.Count > 0)
-                {
-                    gameVideo.Navigate(new Uri(await GetVideoUrl(game.Videos[0])));
-                }
-            }
         }
 
         private Task<List<Game>> GetGames()
@@ -64,7 +56,7 @@ namespace GameListApp
 
         private Task<string> GetVideoUrl(int videoId)
         {
-            return Task.Run(() => 
+            return Task.Run(() =>
             {
                 string url = "https://api-v3.igdb.com/game_videos/?search=&fields=video_id";
                 HttpWebRequest gameRequest = (HttpWebRequest)WebRequest.Create(url);
@@ -72,7 +64,7 @@ namespace GameListApp
                 gameRequest.Headers.Add("user-key", "e4c3e5ce51b8b8b1c9c58853c4182aca");
                 WebResponse gameResponse = (HttpWebResponse)gameRequest.GetResponse();
                 string json = new StreamReader(gameResponse.GetResponseStream()).ReadToEnd();
-                
+
                 List<Video> videos = JsonConvert.DeserializeObject<List<Video>>(json);
 
                 foreach (var video in videos)
@@ -86,5 +78,23 @@ namespace GameListApp
             });
         }
 
+        
+
+        private async void gamesListBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var game = (gamesListBox.Items[gamesListBox.Items.CurrentPosition] as Game);
+
+            gameNameTextBox.Content = game.Name;
+
+            try
+            {
+                if (game.Videos.Count > 0)
+                {
+                    video.Source = (new Uri(await GetVideoUrl(game.Videos[1])));
+                }
+            }
+            catch (Exception)
+            { }
+        }
     }
 }

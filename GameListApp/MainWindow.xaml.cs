@@ -19,11 +19,9 @@ using Newtonsoft.Json;
 
 namespace GameListApp
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private List<Game> _games;
         public MainWindow()
         {
             InitializeComponent();
@@ -49,52 +47,99 @@ namespace GameListApp
                 WebResponse gameResponse = (HttpWebResponse)gameRequest.GetResponse();
                 string json = new StreamReader(gameResponse.GetResponseStream()).ReadToEnd();
 
-                List<Game> games = JsonConvert.DeserializeObject<List<Game>>(json);
-                return games;
+                _games = JsonConvert.DeserializeObject<List<Game>>(json);
+                return _games;
             });
         }
 
-        private Task<string> GetVideoUrl(int videoId)
+        private Task<string> GetScreenUrl(int screenId)
         {
             return Task.Run(() =>
             {
-                string url = "https://api-v3.igdb.com/game_videos/?search=&fields=video_id";
+                string url = "https://api-v3.igdb.com/screenshots/?search=&fields=image_id,url";
                 HttpWebRequest gameRequest = (HttpWebRequest)WebRequest.Create(url);
                 gameRequest.Accept = "application/json";
                 gameRequest.Headers.Add("user-key", "e4c3e5ce51b8b8b1c9c58853c4182aca");
                 WebResponse gameResponse = (HttpWebResponse)gameRequest.GetResponse();
                 string json = new StreamReader(gameResponse.GetResponseStream()).ReadToEnd();
 
-                List<Video> videos = JsonConvert.DeserializeObject<List<Video>>(json);
+                List<Screen> photos = JsonConvert.DeserializeObject<List<Screen>>(json);
 
-                foreach (var video in videos)
+                foreach (var photo in photos)
                 {
-                    if (videoId == video.Id)
+                    if (screenId == photo.Id)
                     {
-                        return "https://www.youtube.com/watch?v=" + video.VideoName;
+                        return photo.Url;
                     }
                 }
-                return "";
+                return "https://uoslab.com/images/tovary/no_image.jpg";
             });
         }
 
-        
 
-        private async void gamesListBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+
+
+
+        private async void GamesListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var game = (gamesListBox.Items[gamesListBox.Items.CurrentPosition] as Game);
-
-            gameNameTextBox.Content = game.Name;
-
-            try
+            int counter = 0;
+            foreach (var game in _games)
             {
-                if (game.Videos.Count > 0)
+                if (counter == gamesListBox.SelectedIndex)
                 {
-                    video.Source = (new Uri(await GetVideoUrl(game.Videos[1])));
+                    gameNameTextBox.Content = game.Name;
+
+                    categoryLabel.Content = game.Category;
+                    createdAtLabel.Content = game.CreatedAt;
+                    firstReleaseLabel.Content = game.FirstReleaseDate;
+                    foreach (var gameMod in game.GameModes)
+                    {
+                        gameModesLabel.Content += gameMod.ToString();
+
+                    }
+                    
+                    foreach (var company in game.InvolvedCompanies)
+                    {
+                       companiesLabel.Content += company.ToString();
+
+                    }
+
+                    foreach (var platform in game.Platforms)
+                    {
+                        platformsLabel.Content += platform.ToString();
+
+                    }
+
+                    foreach (var perspectivity in game.PlayerPerspectives)
+                    {
+                        playerPerspectivesLabel.Content += perspectivity.ToString();
+
+                    }
+
+                    popularityLabel.Content = game.Popularity;
+
+                    foreach (var similarGame in game.SimilarGames)
+                    {
+                        similarGamesLabel.Content += similarGame.ToString();
+
+                    }
+
+                    updatedAtLabel.Content = game.UpdatedAt;
+                    ratingLabel.Content = game.Rating;
+
+                    try
+                    {
+                        if (game.Videos.Count > 0)
+                        {
+                            image.Source = new Uri(await GetScreenUrl(game.Screenshots[0]));
+                        }
+                    }
+                    catch (Exception)
+                    { }
+                    return;
                 }
+                counter++;
             }
-            catch (Exception)
-            { }
         }
     }
 }

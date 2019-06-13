@@ -2,10 +2,10 @@
 
 namespace GameListApp
 {
-    public class Video
+    public class Screen
     {
         public int Id { get; set; }
-        [JsonProperty("video_id")]
-        public string VideoName { get; set; }
+        [JsonProperty("url")]
+        public string Url { get; set; }
     }
 }
